@@ -16,22 +16,30 @@ class Player(object):
         self.replace = lambda val,rand: rand % 16
         self.skip = lambda val, rand: val
         
-    # def findMaxOpPos(currentMax, newVal, op, pos):
- #        """
- #        This function finds the operation and position that will yield the maximum value of points
- #
- #        Args:
- #            currentMax (int): The current max value
- #            newVal (int): New value that will be compared to the current max
- #            op: [self.add | self.replace]
- #            pos (int): [0|1|2|3]
- #
- #        Returns:
- #            newMax (int)
- #            operation: [self.skip | self.add | self.replace]
- #            selected: [0|1|2|3]
- #        """
- #
+    def findMaxOpPos(currentMax, oldOp, oldPos, newVal, op, pos):
+        """
+        This function finds the operation and position that will yield the maximum value of points
+
+        Args:
+            currentMax (int): The current max value
+            oldOp: [self.add | self.replace]
+            oldPos (int): [0|1|2|3]
+
+            newVal (int): New value that will be compared to the current max
+            op: [self.add | self.replace]
+            pos (int): [0|1|2|3]
+
+        Returns:
+            newMax (int)
+            operation: [self.skip | self.add | self.replace]
+            selected: [0|1|2|3]
+        """
+        #If current max is less than the new value; return new value and its op and pos
+        if currentMax < newVal:
+            return newVal, op, pos
+        #Current max is greater than the new value; return the current max and its op and pos
+        else:
+            return currentMax, oldOp, oldPos
         
     def make_decision(self, four_bits, next_randoms, code_digits):
         """
@@ -48,7 +56,6 @@ class Player(object):
             operation: [self.skip | self.add | self.replace]
         	selected: [0|1|2|3]
         """
-        
         #The random bit
         randBit = next_randoms[0]
         
@@ -62,6 +69,12 @@ class Player(object):
         bitThree = four_bits[2]
         bitFour = four_bits[3]
         
+        #The sum of randBit and values that are in the array
+        sumBitOne = randBit + bitOne
+        sumBitTwo = randBit + bitTwo
+        sumBitThree = randBit + bitThree
+        sumBitFour = randBit + bitFour 
+        
         """
         Logic:
         1.  Check if the random bit can add/replace bits in position 2 | 3
@@ -70,13 +83,13 @@ class Player(object):
         2.  Check all possible adjacency and pick the max value
         """
         #Checks if the random bit can add/replace bits in position 2 | 3
-        if randBit == codeOne or (randBit + bitThree) == codeOne or randBit == codeTwo or (randBit + bitFour) == codeTwo:
+        if randBit == codeOne or sumBitThree == codeOne or randBit == codeTwo or sumBitFour == codeTwo:
             #Checks if the random bit is equal to the value of the first code digit (pos 2)
             if randBit == codeOne:
                 operation = self.replace
                 selected = 2
             #Checks if the random bit plus the value of the third bit is equal to the first code digit
-            elif randBit + bitThree == codeOne:
+            elif sumBitThree == codeOne:
                 operation = self.add
                 selected = 2
             #Checks if the random bit is equal to the value of the second code digit (pos 3)
@@ -84,46 +97,98 @@ class Player(object):
                 operation = self.replace
                 selected = 3
             #Checks if the random bit plus the value of the fourth bit is equal to the second code digit
-            elif randBit + bitFour == codeTwo:
+            elif sumBitFour == codeTwo:
                 operation = self.add
                 selected = 3
                 
         #Checks if there are any adjacency in the list
-        elif randBit in four_bits or (randBit + bitOne) in four_bits or (randBit + bitTwo) in four_bits or (randBit + bitThree) in four_bits or (randBit + bitFour) in four_bits:
-            
+        elif randBit in four_bits or sumBitOne in four_bits or sumBitTwo in four_bits or sumBitThree in four_bits or sumBitFour in four_bits
             #Default values. Will be changed after for loop
             currentMax = 0
             operation = self.skip
             selected = 0
             
             #Looping through each bit in the four_bits array
-            for index in four_bits:
+            for index in (0, 4):
                 #Checking all possible adjacency at position 0
-                if index == bitOne:
+                if index == 0:
                     #Check 3 adjacency with replacement
+                    if randBit == bitTwo and randBit == bitThree and randBit == bitFour:
+                        #Compute the total points earned
+                        totalPoints = 8 * randBit
+                        #Compare with current max
+                        currentMax, operation, selected = findMaxOpPos(currentMax, operation, selected, totalPoints, self.replace, 0)
                     #Check 3 adjacency with addition
-                    
+                    if sumBitOne == bitTwo and sumBitOne == bitThree and sumBitOne == bitFour:
+                        #Compute the total points earned
+                        totalPoints = 8 * sumBitOne
+                        #Compare with current max
+                        currentMax, operation, selected = findMaxOpPos(currentMax, operation, selected, totalPoints, self.replace, 0)
+                        
                     #Check 2 adjacency with replacement
+                    if randBit == bitTwo and randBit == bitThree:
+                        #Compute the total points earned
+                        totalPoints = 4 * randBit
+                        #Compare with current max
+                        currentMax, operation, selected = findMaxOpPos(currentMax, operation, selected, totalPoints, self.replace, 0)
                     #Check 2 adjacency with addition
+                    if sumBitOne == bitTwo and sumBitOne == bitThree:
+                        #Compute the total points earned
+                        totalPoints = 4 * sumBitOne
+                        #Compare with current max
+                        currentMax, operation, selected = findMaxOpPos(currentMax, operation, selected, totalPoints, self.replace, 0)
                     
                     #Check 1 adjacency with replacement
+                    if randBit == bitTwo:
+                        #Compute the total points earned
+                        totalPoints = 2 * randBit
+                        #Compare with current max
+                        currentMax, operation, selected = findMaxOpPos(currentMax, operation, selected, totalPoints, self.replace, 0)
                     #Check 1 adjacency with addition
-                    print "HI"
+                    if sumBitOne == bitTwo:
+                        #Compute the total points earned
+                        totalPoints = 2 * sumBitOne
+                        #Compare with current max
+                        currentMax, operation, selected = findMaxOpPos(currentMax, operation, selected, totalPoints, self.replace, 0)
+
                 #Checking all possible adjacency at position 1
-                elif index == bitTwo:
+                #TODO: Finish this
+                elif index == 1:
                     #Check 3 adjacency with replacement
+                    if randBit == bitOne and randBit == bitThree and randBit == bitFour:
+                        #Compute the total points earned
+                        totalPoints = 8 * randBit
+                        #Compare with current max
+                        currentMax, operation, selected = findMaxOpPos(currentMax, operation, selected, totalPoints, self.replace, 1)
                     #Check 3 adjacency with addition
+                    if sumBitOne == bitOne and sumBitOne == bitThree and sumBitOne == bitFour:
+                        #Compute the total points earned
+                        totalPoints = 8 * sumBitOne
+                        #Compare with current max
+                        currentMax, operation, selected = findMaxOpPos(currentMax, operation, selected, totalPoints, self.replace, 1)
+
                     
                     #Check 2 adjacency with replacement
                     #Check 2 adjacency with addition
                     
                     #Check 1 adjacency with replacement
                     #Check 1 adjacency with addition
-                    print "HI"
+                    
                 #Checking all possible adjacency at position 2
-                elif index == bitThree:
+                #TODO: Finish this
+                elif index == 2:
                     #Check 3 adjacency with replacement
+                    if randBit == bitOne and randBit == bitTwo and randBit == bitFour:
+                        #Compute the total points earned
+                        totalPoints = 8 * randBit
+                        #Compare with current max
+                        currentMax, operation, selected = findMaxOpPos(currentMax, operation, selected, totalPoints, self.replace, 2)
                     #Check 3 adjacency with addition
+                    if sumBitOne == bitOne and sumBitOne == bitTwo and sumBitOne == bitFour:
+                        #Compute the total points earned
+                        totalPoints = 8 * sumBitOne
+                        #Compare with current max
+                        currentMax, operation, selected = findMaxOpPos(currentMax, operation, selected, totalPoints, self.replace, 2)
                     
                     #Check 2 adjacency with replacement
                     #Check 2 adjacency with addition
@@ -132,16 +197,45 @@ class Player(object):
                     #Check 1 adjacency with addition
                     print "HI"
                 #Checking all possible adjacency at position 3
-                elif index == bitFour:
+                elif index == 3:
                     #Check 3 adjacency with replacement
+                    if randBit == bitOne and randBit == bitTwo and randBit == bitThree:
+                        #Compute the total points earned
+                        totalPoints = 8 * randBit
+                        #Compare with current max
+                        currentMax, operation, selected = findMaxOpPos(currentMax, operation, selected, totalPoints, self.replace, 3)
                     #Check 3 adjacency with addition
-                    
+                    if sumBitFour == bitOne and sumBitFour == bitTwo and sumBitFour == bitThree:
+                        #Compute the total points earned
+                        totalPoints = 8 * sumBitFour
+                        #Compare with current max
+                        currentMax, operation, selected = findMaxOpPos(currentMax, operation, selected, totalPoints, self.replace, 3)
+                        
                     #Check 2 adjacency with replacement
+                    if randBit == bitTwo and randBit == bitThree:
+                        #Compute the total points earned
+                        totalPoints = 4 * randBit
+                        #Compare with current max
+                        currentMax, operation, selected = findMaxOpPos(currentMax, operation, selected, totalPoints, self.replace, 3)
                     #Check 2 adjacency with addition
+                    if sumBitFour == bitTwo and sumBitFour == bitThree:
+                        #Compute the total points earned
+                        totalPoints = 4 * sumBitFour
+                        #Compare with current max
+                        currentMax, operation, selected = findMaxOpPos(currentMax, operation, selected, totalPoints, self.replace, 3)
                     
                     #Check 1 adjacency with replacement
+                    if randBit == bitThree:
+                        #Compute the total points earned
+                        totalPoints = 2 * randBit
+                        #Compare with current max
+                        currentMax, operation, selected = findMaxOpPos(currentMax, operation, selected, totalPoints, self.replace, 3)
                     #Check 1 adjacency with addition
-                    print "HI"
+                    if sumBitFour == bitThree:
+                        #Compute the total points earned
+                        totalPoints = 2 * sumBitFour
+                        #Compare with current max
+                        currentMax, operation, selected = findMaxOpPos(currentMax, operation, selected, totalPoints, self.replace, 3)
         
         else:
             operation = self.replace
