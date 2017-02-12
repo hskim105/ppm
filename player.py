@@ -32,12 +32,12 @@ class Player(object):
         	selected: [0|1|2|3]
         """
         
-
-    	#Your Code is Here
         """
         Logic:
         1.  Check if the random bit can be add/replace bits in position 2 | 3
             If it can, then replace the highest one
+        
+        2.  Check all possible adjacency and pick the max value
         """
         
         if next_randoms[0] == code_digits[0] or next_randoms[0] + four_bits[2] == code_digits[0] or next_randoms[0] == code_digits[1] or next_randoms[0] + four_bits[3] == code_digits[1]:
