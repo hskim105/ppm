@@ -87,6 +87,7 @@ class Player(object):
         4.  Default to right most pos
         """
         #TODO: Abstract code to make it neater
+        #TODO: Maybe abstract to pick the largest of all possibilities
         #Checks if the random bit can add/replace bits in position 2 | 3
         #TODO: Choose the largest of the four possible choices
         if randBit == codeOne or sumBitThree == codeOne or randBit == codeTwo or sumBitFour == codeTwo:
