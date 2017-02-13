@@ -82,9 +82,13 @@ class Player(object):
         
         2.  Check all possible adjacency and pick the max value
         
-        3.  Check the maximum position to add or replace
+        3.  Check the maximum position to add
+        
+        4.  Default to right most pos
         """
+        #TODO: Abstract code to make it neater
         #Checks if the random bit can add/replace bits in position 2 | 3
+        #TODO: Choose the largest of the four possible choices
         if randBit == codeOne or sumBitThree == codeOne or randBit == codeTwo or sumBitFour == codeTwo:
             #Checks if the random bit is equal to the value of the first code digit (pos 2)
             if randBit == codeOne:
