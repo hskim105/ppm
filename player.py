@@ -40,13 +40,7 @@ class Player(object):
         #Current max is greater than the new value; return the current max and its op and pos
         else: 
             return currentMax, oldOp, oldPos
-        
-    def hexAdd(self, sum):
-            if(sum > 15):
-                return sum - 16
-            else:
-                return sum
-    
+            
     def make_decision(self, four_bits, next_randoms, code_digits):
         """
         This function decide next move of the machine player.
@@ -76,10 +70,10 @@ class Player(object):
         bitFour = four_bits[3]
         
         #The sum of randBit and values that are in the array
-        sumBitOne = randBit + bitOne
-        sumBitTwo = randBit + bitTwo
-        sumBitThree = randBit + bitThree
-        sumBitFour = randBit + bitFour 
+        sumBitOne = (randBit + bitOne) % 16
+        sumBitTwo = (randBit + bitTwo) % 16
+        sumBitThree = (randBit + bitThree) % 16
+        sumBitFour = (randBit + bitFour) % 16
         
         """
         Logic:
@@ -290,7 +284,7 @@ class Player(object):
             #Looping through each bit in the four_bits array
             for index in range(0, 4):
                 #Compute the total points earned
-                totalPoints = self.hexAdd(randBit + four_bits[index])
+                totalPoints = (randBit + four_bits[index]) % 16
                 #Compare with current max
                 currentMax, operation, selected = self.findMaxOpPos(currentMax, operation, selected, totalPoints, self.add, index)
         return operation, selected
