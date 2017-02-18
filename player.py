@@ -78,7 +78,6 @@ class Player(object):
         """
         Logic:
         1.  Check if the random bit can add/replace bits in position 2 | 3
-            If it can, then replace the highest one
         
         2.  Check all possible adjacency and pick the max value
         
@@ -86,9 +85,7 @@ class Player(object):
         
         4.  Default to right most pos
         """
-        #TODO: Abstract code to make it neater
         #Checks if the random bit can add/replace bits in position 2 | 3
-        #TODO: Choose the largest of the four possible choices
         if randBit == codeOne or sumBitThree == codeOne or randBit == codeTwo or sumBitFour == codeTwo:
             #Checks if the random bit is equal to the value of the first code digit (pos 2)
             if randBit == codeOne:
